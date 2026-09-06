@@ -24,8 +24,8 @@ def process_single_media(data, resolution: str):
         direct_url = data.get("url")
         if direct_url:
             ext = data.get("ext", "mp4")
-            return direct_url, ext, title, thumbnail
-        return None, None, None, None
+            return direct_url, None, ext, title, thumbnail
+        return None, None, None, None, None
 
     direct_formats = []
     for f in raw_formats:
@@ -131,7 +131,24 @@ def process_single_media(data, resolution: str):
         chosen_ext = ext if ext else "mp4"
 
     media_url = chosen_format.get("url")
-    return media_url, chosen_ext, title, thumbnail
+    audio_url = None
+    
+    if not is_audio_only:
+        has_audio = str(chosen_format.get("acodec", "none")).lower() not in ["none", ""]
+        if not has_audio:
+            audio_formats = [f for f in direct_formats if str(f.get("acodec", "none")).lower() not in ["none", ""] and str(f.get("vcodec", "none")).lower() in ["none", ""]]
+            if not audio_formats:
+                audio_formats = [f for f in direct_formats if str(f.get("acodec", "none")).lower() not in ["none", ""]]
+            if audio_formats:
+                def audio_sort_key(f):
+                    e = str(f.get("ext", "")).lower()
+                    apple_score = 1 if e in ["m4a", "mp3", "aac"] else 0
+                    abr = float(f.get("abr") or f.get("tbr") or 0.0)
+                    return (apple_score, abr)
+                audio_formats.sort(key=audio_sort_key, reverse=True)
+                audio_url = audio_formats[0].get("url")
+
+    return media_url, audio_url, chosen_ext, title, thumbnail
 
 def extract_media(url: str, default_resolution: str = "Best Quality"):
     plugin_dir = os.path.dirname(os.path.abspath(__file__))
@@ -242,7 +259,7 @@ def extract_media(url: str, default_resolution: str = "Best Quality"):
             pass
         return None
 
-    # Fetch concurrently — capped at 3 workers to avoid YouTube rate-limiting
+    # Fetch concurrently — capped at 3 workers to avoid rate-limiting
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
         results = executor.map(fetch_single, urls_to_fetch)
         for r in results:
@@ -258,28 +275,33 @@ def extract_media(url: str, default_resolution: str = "Best Quality"):
     for data in parsed_items:
         item_formats = {}
         best_url = None
+        best_audio_url = None
         best_ext = "mp4"
         item_title = "Video"
         item_thumb = ""
 
         for res in resolutions_to_check:
-            media_url, ext, title, thumb = process_single_media(data, res)
+            media_url, audio_url, ext, title, thumb = process_single_media(data, res)
             if media_url:
                 item_formats[res] = media_url
                 if res == default_resolution or (best_url is None):
                     best_url = media_url
+                    best_audio_url = audio_url
                     best_ext = ext
                     item_title = title
                     item_thumb = thumb
 
         if best_url:
-            playlist_items.append({
+            playlist_item = {
                 "title": item_title,
                 "url": best_url,
                 "ext": best_ext,
                 "formats": item_formats,
                 "thumbnail": item_thumb
-            })
+            }
+            if best_audio_url:
+                playlist_item["audioUrl"] = best_audio_url
+            playlist_items.append(playlist_item)
 
     if not playlist_items:
         return {"status": "error", "message": "Failed to resolve direct playable stream URLs"}
