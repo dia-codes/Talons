@@ -6,7 +6,6 @@ import subprocess
 import re
 
 def sanitize_filename(title: str, ext: str) -> str:
-    # Replace illegal/disruptive path characters
     clean = re.sub(r'[/\\?%*:|"<>!]', '-', title).strip()
     clean = re.sub(r'\s+', ' ', clean)
     if not clean:
@@ -16,92 +15,18 @@ def sanitize_filename(title: str, ext: str) -> str:
         return clean
     return f"{clean}.{clean_ext}"
 
-def extract_media(url: str, resolution: str = "Best Quality"):
-    plugin_dir = os.path.dirname(os.path.abspath(__file__))
-    ytdlp_dir = os.path.join(plugin_dir, "yt-dlp")
-    ytdlp_bin = os.path.join(plugin_dir, "yt-dlp")
-    
-    env = os.environ.copy()
-    if os.path.isdir(ytdlp_dir):
-        env["PYTHONPATH"] = f"{ytdlp_dir}:{env.get('PYTHONPATH', '')}"
-        cmd = [
-            sys.executable or "python3",
-            "-m",
-            "yt_dlp",
-            "--no-warnings",
-            "-q",
-            "--dump-json",
-            "--no-playlist",
-            "--",
-            url
-        ]
-    elif os.path.isfile(ytdlp_bin) and os.access(ytdlp_bin, os.X_OK):
-        cmd = [
-            ytdlp_bin,
-            "--no-warnings",
-            "-q",
-            "--dump-json",
-            "--no-playlist",
-            "--",
-            url
-        ]
-    else:
-        # Fallback to system yt-dlp / yt_dlp
-        cmd = [
-            sys.executable or "python3",
-            "-m",
-            "yt_dlp",
-            "--no-warnings",
-            "-q",
-            "--dump-json",
-            "--no-playlist",
-            "--",
-            url
-        ]
-
-    try:
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=env)
-        stdout, stderr = proc.communicate()
-    except Exception as e:
-        return {"status": "error", "message": f"Failed to execute yt-dlp: {str(e)}"}
-
-    if not stdout or not stdout.strip():
-        err_msg = stderr.strip() if stderr else "No output from yt-dlp"
-        return {"status": "error", "message": err_msg}
-
-    # Slice JSON boundaries to ignore any residual non-fatal log lines
-    try:
-        first_brace = stdout.find("{")
-        last_brace = stdout.rfind("}")
-        if first_brace == -1 or last_brace == -1:
-            raise ValueError("No JSON object found in output")
-        raw_json = stdout[first_brace:last_brace + 1]
-        data = json.loads(raw_json)
-    except Exception as e:
-        return {"status": "error", "message": f"Failed to parse yt-dlp metadata: {str(e)}"}
-
+def process_single_media(data, resolution: str):
     title = data.get("title", "Video")
     thumbnail = data.get("thumbnail", "")
     raw_formats = data.get("formats", [])
 
     if not raw_formats:
-        # Check if direct url is provided at top-level
         direct_url = data.get("url")
         if direct_url:
             ext = data.get("ext", "mp4")
-            filename = sanitize_filename(title, ext)
-            return {
-                "status": "success",
-                "title": title,
-                "url": direct_url,
-                "filename": filename,
-                "ext": ext,
-                "resolution": resolution,
-                "thumbnail": thumbnail
-            }
-        return {"status": "error", "message": "No playable formats found in media metadata"}
+            return direct_url, ext, title, thumbnail
+        return None, None, None, None
 
-    # Filter for direct HTTPS downloadable streams (exclude HLS m3u8 and DASH mpd playlists)
     direct_formats = []
     for f in raw_formats:
         f_url = f.get("url", "")
@@ -120,7 +45,6 @@ def extract_media(url: str, resolution: str = "Best Quality"):
     chosen_ext = "m4a" if is_audio_only else "mp4"
 
     if is_audio_only:
-        # Filter audio-only streams
         audio_formats = []
         for f in direct_formats:
             acodec = str(f.get("acodec", "none")).lower()
@@ -130,7 +54,6 @@ def extract_media(url: str, resolution: str = "Best Quality"):
 
         def audio_sort_key(f):
             ext = str(f.get("ext", "")).lower()
-            # Prioritize Apple/macOS native audio containers (m4a, mp3, aac)
             apple_score = 1 if ext in ["m4a", "mp3", "aac"] else 0
             abr = float(f.get("abr") or f.get("tbr") or 0.0)
             return (apple_score, abr)
@@ -139,7 +62,6 @@ def extract_media(url: str, resolution: str = "Best Quality"):
         chosen_format = audio_formats[0] if audio_formats else None
 
         if not chosen_format:
-            # Fallback to any stream containing audio
             with_audio = [f for f in direct_formats if str(f.get("acodec", "none")).lower() not in ["none", ""]]
             chosen_format = with_audio[-1] if with_audio else direct_formats[0]
 
@@ -152,9 +74,7 @@ def extract_media(url: str, resolution: str = "Best Quality"):
             chosen_ext = "opus"
         else:
             chosen_ext = ext or "m4a"
-
     else:
-        # Video requested
         requested_height = None
         for h in [2160, 1440, 1080, 720, 480, 360, 240, 144]:
             if str(h) in resolution:
@@ -197,7 +117,6 @@ def extract_media(url: str, resolution: str = "Best Quality"):
             pool.sort(key=height_sort_key, reverse=True)
             chosen_format = pool[0]
         else:
-            # Best Quality: highest height, prefer mp4 and progressive audio
             def best_sort_key(f):
                 h = parse_height(f)
                 is_mp4 = 1 if str(f.get("ext", "")).lower() == "mp4" else 0
@@ -212,21 +131,170 @@ def extract_media(url: str, resolution: str = "Best Quality"):
         chosen_ext = ext if ext else "mp4"
 
     media_url = chosen_format.get("url")
-    if not media_url:
-        return {"status": "error", "message": "Failed to resolve direct playable stream URL"}
+    return media_url, chosen_ext, title, thumbnail
 
-    actual_height = parse_height(chosen_format) if not is_audio_only else 0
-    res_label = f"{actual_height}p" if actual_height > 0 else ("Audio Only" if is_audio_only else resolution)
-    filename = sanitize_filename(title, chosen_ext)
+def extract_media(url: str, default_resolution: str = "Best Quality"):
+    plugin_dir = os.path.dirname(os.path.abspath(__file__))
+    ytdlp_dir = os.path.join(plugin_dir, "yt-dlp")
+    ytdlp_bin = os.path.join(plugin_dir, "yt-dlp")
+    
+    env = os.environ.copy()
+    if os.path.isdir(ytdlp_dir):
+        env["PYTHONPATH"] = f"{ytdlp_dir}:{env.get('PYTHONPATH', '')}"
+        cmd = [
+            sys.executable or "python3",
+            "-m",
+            "yt_dlp",
+            "--no-warnings",
+            "-q",
+            "--dump-json",
+            "--yes-playlist",
+            "--",
+            url
+        ]
+    elif os.path.isfile(ytdlp_bin) and os.access(ytdlp_bin, os.X_OK):
+        cmd = [
+            ytdlp_bin,
+            "--no-warnings",
+            "-q",
+            "--dump-json",
+            "--yes-playlist",
+            "--",
+            url
+        ]
+    else:
+        cmd = [
+            sys.executable or "python3",
+            "-m",
+            "yt_dlp",
+            "--no-warnings",
+            "-q",
+            "--dump-json",
+            "--yes-playlist",
+            "--",
+            url
+        ]
+
+    import concurrent.futures
+
+    flat_cmd = cmd.copy()
+    if "--yes-playlist" in flat_cmd:
+        idx = flat_cmd.index("--yes-playlist")
+        flat_cmd[idx] = "--flat-playlist"
+    flat_cmd.insert(-1, "--dump-single-json")
+
+    try:
+        proc = subprocess.Popen(flat_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=env)
+        stdout, stderr = proc.communicate()
+    except Exception as e:
+        return {"status": "error", "message": f"Failed to execute yt-dlp: {str(e)}"}
+
+    if not stdout or not stdout.strip():
+        err_msg = stderr.strip() if stderr else "No output from yt-dlp"
+        return {"status": "error", "message": err_msg}
+
+    playlist_title = None
+    urls_to_fetch = []
+
+    for line in stdout.splitlines():
+        line = line.strip()
+        if not line or not line.startswith('{'):
+            continue
+        try:
+            metadata = json.loads(line)
+            
+            # Extract playlist title from the first item if available
+            if not playlist_title and metadata.get("playlist_title"):
+                playlist_title = metadata.get("playlist_title")
+
+            if metadata.get("_type") == "playlist":
+                for entry in metadata.get("entries", []):
+                    u = entry.get("url") or entry.get("webpage_url")
+                    if u:
+                        urls_to_fetch.append(u)
+            else:
+                u = metadata.get("url") or metadata.get("webpage_url")
+                if u:
+                    urls_to_fetch.append(u)
+        except Exception:
+            pass
+
+    if not urls_to_fetch:
+        return {"status": "error", "message": "No playable URLs found in playlist"}
+        
+    # Cap playlist items to avoid taking too long
+    if len(urls_to_fetch) > 50:
+        urls_to_fetch = urls_to_fetch[:50]
+
+    parsed_items = []
+
+    def fetch_single(vid_url):
+        single_cmd = cmd.copy()
+        if "--yes-playlist" in single_cmd:
+            single_cmd[single_cmd.index("--yes-playlist")] = "--no-playlist"
+        single_cmd[-1] = vid_url
+        try:
+            p = subprocess.Popen(single_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=env)
+            out, _ = p.communicate(timeout=45)
+            if out and out.strip().startswith('{'):
+                return json.loads(out)
+        except Exception:
+            pass
+        return None
+
+    # Fetch concurrently
+    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        results = executor.map(fetch_single, urls_to_fetch)
+        for r in results:
+            if r:
+                parsed_items.append(r)
+
+    if not parsed_items:
+        return {"status": "error", "message": "Failed to extract media info for items"}
+
+    playlist_items = []
+    resolutions_to_check = ["Best Quality", "1080p", "720p", "480p", "Audio Only"]
+
+    for data in parsed_items:
+        item_formats = {}
+        best_url = None
+        best_ext = "mp4"
+        item_title = "Video"
+        item_thumb = ""
+
+        for res in resolutions_to_check:
+            media_url, ext, title, thumb = process_single_media(data, res)
+            if media_url:
+                item_formats[res] = media_url
+                if res == default_resolution or (best_url is None):
+                    best_url = media_url
+                    best_ext = ext
+                    item_title = title
+                    item_thumb = thumb
+
+        if best_url:
+            playlist_items.append({
+                "title": item_title,
+                "url": best_url,
+                "ext": best_ext,
+                "formats": item_formats,
+                "thumbnail": item_thumb
+            })
+
+    if not playlist_items:
+        return {"status": "error", "message": "Failed to resolve direct playable stream URLs"}
+
+    # If it's a playlist, return the list structure.
+    # We will format it as a single JSON object where `playlist` contains the list of items.
+    
+    final_title = "Playlist" if len(playlist_items) > 1 else playlist_items[0]["title"]
+    if len(playlist_items) > 1 and playlist_title:
+        final_title = playlist_title
 
     return {
         "status": "success",
-        "title": title,
-        "url": media_url,
-        "filename": filename,
-        "ext": chosen_ext,
-        "resolution": res_label,
-        "thumbnail": thumbnail
+        "title": final_title,
+        "playlist": playlist_items
     }
 
 def main():

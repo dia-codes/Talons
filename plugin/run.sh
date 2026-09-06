@@ -14,11 +14,11 @@ if [ "$1" == "--extract" ] || [ "$1" == "--dump-json" ]; then
 elif [ "$1" == "--raw" ]; then
     URL="$2"
     if [ -d "$DIR/yt-dlp" ]; then
-        PYTHONPATH="$DIR/yt-dlp:$PYTHONPATH" python3 -m yt_dlp --no-warnings -q --dump-json --no-playlist -- "$URL"
+        PYTHONPATH="$DIR/yt-dlp:$PYTHONPATH" python3 -m yt_dlp --no-warnings -q --dump-json --yes-playlist -- "$URL"
     elif [ -f "$DIR/yt-dlp" ]; then
-        "$DIR/yt-dlp" --no-warnings -q --dump-json --no-playlist -- "$URL"
+        "$DIR/yt-dlp" --no-warnings -q --dump-json --yes-playlist -- "$URL"
     else
-        python3 -m yt_dlp --no-warnings -q --dump-json --no-playlist -- "$URL"
+        python3 -m yt_dlp --no-warnings -q --dump-json --yes-playlist -- "$URL"
     fi
 else
     # Default: treat first argument as URL if no flag is provided
