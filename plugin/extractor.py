@@ -242,8 +242,8 @@ def extract_media(url: str, default_resolution: str = "Best Quality"):
             pass
         return None
 
-    # Fetch concurrently
-    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+    # Fetch concurrently — capped at 3 workers to avoid YouTube rate-limiting
+    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
         results = executor.map(fetch_single, urls_to_fetch)
         for r in results:
             if r:
