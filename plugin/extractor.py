@@ -195,10 +195,12 @@ def extract_media(url: str, default_resolution: str = "Best Quality"):
     import concurrent.futures
 
     flat_cmd = cmd.copy()
+    if "--dump-json" in flat_cmd:
+        flat_cmd.remove("--dump-json")
     if "--yes-playlist" in flat_cmd:
         idx = flat_cmd.index("--yes-playlist")
         flat_cmd[idx] = "--flat-playlist"
-    flat_cmd.insert(-1, "--dump-single-json")
+    flat_cmd.insert(-2, "--dump-single-json")
 
     try:
         proc = subprocess.Popen(flat_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=env)
@@ -239,11 +241,15 @@ def extract_media(url: str, default_resolution: str = "Best Quality"):
     if not urls_to_fetch:
         return {"status": "error", "message": "No playable URLs found in playlist"}
         
-    # Cap playlist items to avoid taking too long
-    if len(urls_to_fetch) > 50:
-        urls_to_fetch = urls_to_fetch[:50]
+    urls_to_fetch = list(dict.fromkeys(urls_to_fetch))
+    is_playlist_mode = len(urls_to_fetch) > 1
+    
+    if is_playlist_mode:
+        final_title = playlist_title if playlist_title else "Playlist"
+        print(json.dumps({"type": "header", "total": len(urls_to_fetch), "playlist_title": final_title}), flush=True)
 
     parsed_items = []
+    resolutions_to_check = ["Best Quality", "1080p", "720p", "480p", "Audio Only"]
 
     def fetch_single(vid_url):
         single_cmd = cmd.copy()
@@ -262,61 +268,63 @@ def extract_media(url: str, default_resolution: str = "Best Quality"):
     # Fetch concurrently — capped at 3 workers to avoid rate-limiting
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
         results = executor.map(fetch_single, urls_to_fetch)
-        for r in results:
-            if r:
-                parsed_items.append(r)
+        for i, data in enumerate(results):
+            if data:
+                item_formats = {}
+                best_url = None
+                best_audio_url = None
+                best_ext = "mp4"
+                item_title = "Video"
+                item_thumb = ""
+
+                for res in resolutions_to_check:
+                    media_url, audio_url, ext, title, thumb = process_single_media(data, res)
+                    if media_url:
+                        item_formats[res] = media_url
+                        if res == default_resolution or (best_url is None):
+                            best_url = media_url
+                            best_audio_url = audio_url
+                            best_ext = ext
+                            item_title = title
+                            item_thumb = thumb
+                
+                if best_url:
+                    if is_playlist_mode:
+                        chunk = {
+                            "type": "item",
+                            "index": i,
+                            "title": item_title,
+                            "url": best_url,
+                            "ext": best_ext,
+                            "formats": item_formats,
+                            "thumbnail": item_thumb
+                        }
+                        if best_audio_url:
+                            chunk["audioUrl"] = best_audio_url
+                        print(json.dumps(chunk, ensure_ascii=False), flush=True)
+                    else:
+                        playlist_item = {
+                            "title": item_title,
+                            "url": best_url,
+                            "ext": best_ext,
+                            "formats": item_formats,
+                            "thumbnail": item_thumb
+                        }
+                        if best_audio_url:
+                            playlist_item["audioUrl"] = best_audio_url
+                        parsed_items.append(playlist_item)
+
+    if is_playlist_mode:
+        # We already streamed all output directly to stdout for Grabbit to parse
+        sys.exit(0)
 
     if not parsed_items:
-        return {"status": "error", "message": "Failed to extract media info for items"}
-
-    playlist_items = []
-    resolutions_to_check = ["Best Quality", "1080p", "720p", "480p", "Audio Only"]
-
-    for data in parsed_items:
-        item_formats = {}
-        best_url = None
-        best_audio_url = None
-        best_ext = "mp4"
-        item_title = "Video"
-        item_thumb = ""
-
-        for res in resolutions_to_check:
-            media_url, audio_url, ext, title, thumb = process_single_media(data, res)
-            if media_url:
-                item_formats[res] = media_url
-                if res == default_resolution or (best_url is None):
-                    best_url = media_url
-                    best_audio_url = audio_url
-                    best_ext = ext
-                    item_title = title
-                    item_thumb = thumb
-
-        if best_url:
-            playlist_item = {
-                "title": item_title,
-                "url": best_url,
-                "ext": best_ext,
-                "formats": item_formats,
-                "thumbnail": item_thumb
-            }
-            if best_audio_url:
-                playlist_item["audioUrl"] = best_audio_url
-            playlist_items.append(playlist_item)
-
-    if not playlist_items:
         return {"status": "error", "message": "Failed to resolve direct playable stream URLs"}
-
-    # If it's a playlist, return the list structure.
-    # We will format it as a single JSON object where `playlist` contains the list of items.
-    
-    final_title = "Playlist" if len(playlist_items) > 1 else playlist_items[0]["title"]
-    if len(playlist_items) > 1 and playlist_title:
-        final_title = playlist_title
 
     return {
         "status": "success",
-        "title": final_title,
-        "playlist": playlist_items
+        "title": parsed_items[0]["title"],
+        "playlist": parsed_items
     }
 
 def main():
