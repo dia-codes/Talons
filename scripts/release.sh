@@ -20,15 +20,8 @@ CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")
 
 echo "🦅 [Talons] Starting release process for version $NEW_VERSION on branch $CURRENT_BRANCH..."
 
-# 1. Update version in plugin manifest
-echo "📝 Updating plugin.json version to $NEW_VERSION..."
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i '' "s/\"version\": \".*\"/\"version\": \"$NEW_VERSION\"/" plugin/plugin.json
-else
-    sed -i "s/\"version\": \".*\"/\"version\": \"$NEW_VERSION\"/" plugin/plugin.json
-fi
-
-# 2. Ensure scripts are executable
+# 1. Ensure scripts are executable
+echo "📝 Ensuring build scripts are executable..."
 chmod +x build/*.sh plugin/*.sh plugin/*.py scripts/*.sh 2>/dev/null || true
 
 # 3. Validate build locally

@@ -1,7 +1,7 @@
 {
   "id": "com.grabbit.plugin.talons",
   "name": "Talons",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "High-performance universal media stream extractor powered by upstream yt-dlp for Grabbit (macOS Apple Silicon).",
   "icon": "icon.svg",
   "executablePath": "run.sh"
