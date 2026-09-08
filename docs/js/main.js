@@ -3,12 +3,47 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  initThemeToggle();
   initMobileNav();
-  initCopyLink();
   initReviews();
   initLatestRelease();
   initSmoothScroll();
 });
+
+// Dark & Light Mode Switcher
+function initThemeToggle() {
+  const toggleBtn = document.getElementById('themeToggleBtn');
+  if (!toggleBtn) return;
+
+  function getActiveTheme() {
+    const saved = localStorage.getItem('talons-theme');
+    if (saved) return saved;
+    return (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+  }
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('talons-theme', theme);
+  }
+
+  // Set initial
+  applyTheme(getActiveTheme());
+
+  toggleBtn.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme(nextTheme);
+  });
+
+  // Listen to OS theme changes if user hasn't explicitly set one
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
+      if (!localStorage.getItem('talons-theme')) {
+        applyTheme(e.matches ? 'light' : 'dark');
+      }
+    });
+  }
+}
 
 // Mobile Navigation Toggle
 function initMobileNav() {
@@ -29,38 +64,6 @@ function initMobileNav() {
   }
 }
 
-// One-click Copy Link to Clipboard
-function initCopyLink() {
-  const copyBtn = document.getElementById('copyBtn');
-  const copyInput = document.getElementById('copyInput');
-
-  if (copyBtn && copyInput) {
-    // Set current URL dynamically if on web
-    if (window.location.href.startsWith('http')) {
-      copyInput.value = window.location.href.split('#')[0];
-    }
-
-    copyBtn.addEventListener('click', async (e) => {
-      e.preventDefault();
-      try {
-        await navigator.clipboard.writeText(copyInput.value);
-        showToast('Link copied to clipboard!');
-        const originalText = copyBtn.value || copyBtn.textContent;
-        copyBtn.value = 'Copied!';
-        copyBtn.textContent = 'Copied!';
-        setTimeout(() => {
-          copyBtn.value = originalText;
-          copyBtn.textContent = originalText;
-        }, 2500);
-      } catch (err) {
-        // Fallback
-        copyInput.select();
-        document.execCommand('copy');
-        showToast('Link copied to clipboard!');
-      }
-    });
-  }
-}
 
 // Toast Alert
 function showToast(message) {

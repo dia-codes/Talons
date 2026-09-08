@@ -1,29 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Talons add-on for Grabbit | Universal Media Stream Extractor</title>
   
-  <meta name="description" content="Talons addon for Grabbit: Universal video, audio, and stream resolution extractor powered by yt-dlp. Engineered natively for macOS Apple Silicon.">
-  <meta name="keywords" content="Grabbit, Talons, yt-dlp, media extractor, youtube downloader, macos apple silicon, arm64, stream grabber">
+  <meta name="description" content="Talons addon for Grabbit: Universal video, audio, and stream resolution extractor powered by yt-dlp.">
+  <meta name="keywords" content="Grabbit, Talons, yt-dlp, media extractor, video downloader, audio extractor, stream grabber">
   <meta name="author" content="Grabbit Team">
 
   <!-- Open Graph / Social Media -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="Talons add-on for Grabbit">
-  <meta property="og:description" content="Extract and download 4K/8K video and high-bitrate audio from YouTube and 2000+ popular websites on macOS.">
+  <meta property="og:description" content="Extract and download 4K/8K video and high-bitrate audio from over 2,000+ popular media platforms.">
   <meta property="og:image" content="assets/hero-talons.svg">
   <meta property="og:url" content="https://grabbit.github.io/grabbit-ytdlp-plugin/">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Talons add-on for Grabbit">
-  <meta name="twitter:description" content="Universal media stream extraction plugin for Grabbit on macOS Apple Silicon.">
+  <meta name="twitter:description" content="Universal media stream extraction plugin for Grabbit.">
   <meta name="twitter:image" content="assets/hero-talons.svg">
 
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+
+  <!-- Prevent Theme Flash -->
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('talons-theme');
+      if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
 </head>
 <body id="top">
 
@@ -36,22 +51,44 @@
         </a>
       </div>
 
-      <nav class="header__nav">
+      <nav class="header__nav" id="mainNav">
         <ul class="header__links_list">
           <li><a href="#tutorial">Tutorial</a></li>
           <li><a href="#features">Features</a></li>
           <li><a href="#useful">Reviews</a></li>
           <li><a href="#about">About</a></li>
-          <li><a href="#share">Share</a></li>
         </ul>
       </nav>
 
       <div class="header__actions">
+        <!-- Theme Toggle Button -->
+        <button id="themeToggleBtn" class="theme-toggle" type="button" aria-label="Toggle dark and light mode" title="Toggle theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+
         <a href="https://github.com/grabbit/grabbit-ytdlp-plugin" target="_blank" rel="noopener noreferrer" class="header__git" title="View Source on GitHub">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
           </svg>
           <span>GitHub</span>
+        </a>
+
+        <a href="https://github.com/grabbit/grabbit-ytdlp-plugin/releases/latest/download/talons.gda" class="header__download_pill" title="Download Talons Bundle">
+          Download
+          <span class="pill-badge">Free</span>
         </a>
 
         <button class="header__burger" aria-label="Toggle navigation menu">
@@ -68,9 +105,14 @@
     <section class="main_screen">
       <div class="container main_screen__grid">
         <div class="main_screen__content">
+          <div class="hero-announcement">
+            <span class="hero-announcement__pill">Powered by yt-dlp</span>
+            <span class="hero-announcement__text">Direct Upstream Synchronization</span>
+          </div>
+
           <h1>Talons addon for Grabbit</h1>
           <p class="subtitle">
-            Universal high-speed stream extractor for YouTube and 2,000+ popular media platforms. Native to macOS Apple Silicon.
+            Universal high-speed stream extractor for over 2,000+ popular media platforms.
           </p>
 
           <a href="#comments" class="main_screen__rates">
@@ -90,7 +132,7 @@
             </a>
             <div class="download-meta">
               <span class="badge" id="releaseVersionTag">v1.0.0</span>
-              <span>talons.gda bundle • macOS 12.0+ (ARM64)</span>
+              <span>talons.gda bundle • Free &amp; Open Source</span>
             </div>
           </div>
 
@@ -109,33 +151,18 @@
               </svg>
               <span>100% Free &amp; Open Source</span>
             </div>
-
-            <div class="badge-item arch">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="4" y="4" width="16" height="16" rx="2"></rect>
-                <rect x="9" y="9" width="6" height="6"></rect>
-                <line x1="9" y1="1" x2="9" y2="4"></line>
-                <line x1="15" y1="1" x2="15" y2="4"></line>
-                <line x1="9" y1="20" x2="9" y2="23"></line>
-                <line x1="15" y1="20" x2="15" y2="23"></line>
-                <line x1="20" y1="9" x2="23" y2="9"></line>
-                <line x1="20" y1="14" x2="23" y2="14"></line>
-                <line x1="1" y1="9" x2="4" y2="9"></line>
-                <line x1="1" y1="14" x2="4" y2="14"></line>
-              </svg>
-              <span>Apple Silicon Native</span>
-            </div>
           </div>
         </div>
 
         <div class="main_screen__visual">
+          <div class="hero_backdrop_glow"></div>
           <img class="orbit_container" src="assets/orbit-circles.svg" alt="Orbit decorative rings" aria-hidden="true">
           <img class="hero_emblem" src="assets/hero-talons.svg" alt="Talons Eagle Claws Media Extractor Emblem">
         </div>
       </div>
     </section>
 
-    <!-- ==================== How to Run Addon (Tutorial) ==================== -->
+    <!-- ==================== How to Run Addon (Tutorial with PNG Screenshots) ==================== -->
     <section class="howTo" id="tutorial">
       <div class="container">
         <div class="section_header">
@@ -152,14 +179,14 @@
               <span class="step_badge">1</span>
               <h3>Open Grabbit Settings</h3>
               <p>
-                Launch Grabbit on your Mac. Press <kbd>Cmd + ,</kbd> or click the gear icon in the toolbar, navigate to the <strong>Extensions</strong> tab on the left sidebar, and click <strong>"Install Plugin from File..."</strong>.
+                Launch Grabbit. Press <kbd>Cmd + ,</kbd> or click the gear icon in the toolbar, navigate to the <strong>Extensions</strong> tab on the left sidebar, and click <strong>"Install Plugin from File..."</strong>.
               </p>
               <p>
                 If you don't have Grabbit yet, download it from the official <a href="https://github.com/grabbit" target="_blank" rel="noopener noreferrer">Grabbit release page</a>.
               </p>
             </div>
             <div class="howTo__graphic">
-              <img src="assets/tutorial-step1.svg" alt="Step 1: Grabbit Settings Extensions tab">
+              <img src="assets/tutorial-step1.png" alt="Step 1: Grabbit Settings Extensions tab" loading="lazy">
             </div>
           </li>
 
@@ -169,14 +196,14 @@
               <span class="step_badge">2</span>
               <h3>Select the talons.gda bundle</h3>
               <p>
-                In the macOS file dialog that appears, locate and select the downloaded <a href="https://github.com/grabbit/grabbit-ytdlp-plugin/releases/latest/download/talons.gda"><code>talons.gda</code></a> file from your Downloads folder.
+                In the file dialog that appears, locate and select the downloaded <a href="https://github.com/grabbit/grabbit-ytdlp-plugin/releases/latest/download/talons.gda"><code>talons.gda</code></a> file from your Downloads folder.
               </p>
               <p>
                 Grabbit will immediately verify the package integrity, extract the Python runtime hooks, and register the extractor definitions.
               </p>
             </div>
             <div class="howTo__graphic">
-              <img src="assets/tutorial-step2.svg" alt="Step 2: Choose talons.gda in open dialog">
+              <img src="assets/tutorial-step2.png" alt="Step 2: Choose talons.gda in open dialog" loading="lazy">
             </div>
           </li>
 
@@ -184,13 +211,13 @@
           <li class="howTo__item">
             <div class="howTo__content">
               <span class="step_badge">3</span>
-              <h3>Download from YouTube &amp; 2000+ Sites</h3>
+              <h3>Download from 2,000+ Supported Sites</h3>
               <p>
                 You're all set! Paste any video or audio URL into Grabbit. Talons will instantly match the stream, parse highest available resolutions (4K 60fps HDR, 1080p, or lossless audio), and download using Grabbit's turbocharged multi-connection engine.
               </p>
             </div>
             <div class="howTo__graphic">
-              <img src="assets/tutorial-step3.svg" alt="Step 3: Active stream downloads in Grabbit">
+              <img src="assets/tutorial-step3.png" alt="Step 3: Active stream downloads in Grabbit" loading="lazy">
             </div>
           </li>
         </ul>
@@ -202,14 +229,14 @@
       <div class="container">
         <div class="section_header">
           <h2>Engineered for Power Users</h2>
-          <p>Why Talons is the indispensable companion plugin for Grabbit on macOS.</p>
+          <p>Why Talons is the indispensable companion plugin for Grabbit.</p>
         </div>
 
         <div class="features_grid">
           <div class="feature_card">
             <div class="feature_icon">⚡</div>
-            <h3>Apple Silicon Optimized</h3>
-            <p>Designed natively for ARM64 (M1, M2, M3, M4 and beyond) to maximize memory throughput and minimize battery drain.</p>
+            <h3>High-Efficiency Architecture</h3>
+            <p>Built for optimal throughput and negligible memory footprint, ensuring rapid resolution and download speeds.</p>
           </div>
 
           <div class="feature_card">
@@ -221,7 +248,7 @@
           <div class="feature_card">
             <div class="feature_icon">🎬</div>
             <h3>Smart Stream Selection</h3>
-            <p>Intelligently negotiates native MP4/M4A containers for hardware-accelerated playback in QuickTime and Final Cut Pro.</p>
+            <p>Intelligently negotiates native MP4/M4A containers for high-performance, hardware-accelerated playback and editing.</p>
           </div>
 
           <div class="feature_card">
@@ -245,51 +272,77 @@
       </div>
     </section>
 
-    <!-- ==================== Testimonials / "How useful is this for you?" ==================== -->
+    <!-- ==================== Testimonials / "How useful is this for you?" (Exact 3 Reviews) ==================== -->
     <section class="useful" id="useful">
       <div class="container">
-        <div class="section_header">
+        <div class="section_header section_header--centered">
           <h2>How useful is this for you?</h2>
-          <p>Read what content creators, video editors, and macOS users say about Talons.</p>
+          <p class="section_lead">Read what content creators, video editors, and power users say about Talons.</p>
         </div>
 
-        <div class="useful__grid">
-          <div class="useful__item">
-            <p>
-              "Talons is the missing piece for Grabbit! Downloading high-bitrate 4K footage from YouTube and Vimeo for editing has never been smoother. Seamless integration on Apple Silicon."
-            </p>
-            <div class="useful__author">
-              <div class="useful__avatar">JM</div>
-              <div class="useful__info">
-                <h4>Jackson Mitchell</h4>
-                <span>Video Producer &amp; Editor</span>
+        <!-- Ecosystem Bar (No specific host names) -->
+        <div class="ecosystem-row" aria-hidden="true">
+          <span class="eco-brand">Grabbit</span>
+          <span class="eco-brand">yt-dlp</span>
+          <span class="eco-brand">FFmpeg</span>
+          <span class="eco-brand">High-Bitrate 4K</span>
+          <span class="eco-brand">Multi-Stream</span>
+          <span class="eco-brand">GitHub</span>
+        </div>
+
+        <!-- Zed-style 3 Reviews Grid (1 card per column, exactly 3 reviews total) -->
+        <div class="zed-quotes-grid zed-quotes-grid--three">
+          <!-- Review 1 -->
+          <div class="zed-card">
+            <div class="zed-card__body">
+              <p class="zed-quote-text">
+                “Talons is the missing piece for Grabbit! Downloading high-bitrate 4K footage and streams for editing has never been smoother. Seamless integration.”
+              </p>
+            </div>
+            <div class="zed-author-row">
+              <div class="zed-author-avatar">JM</div>
+              <div class="zed-author-meta">
+                <div class="zed-author-name">Jackson Mitchell</div>
+                <div class="zed-author-role">Video Producer &amp; Editor</div>
               </div>
+              <div class="zed-author-badge">Final Cut</div>
             </div>
           </div>
 
-          <div class="useful__item">
-            <p>
-              "Absolutely love the Talons plugin for Grabbit! It gives you the full power of yt-dlp directly within Grabbit's native macOS interface. Quick, clean, and blazing fast."
-            </p>
-            <div class="useful__author">
-              <div class="useful__avatar">OR</div>
-              <div class="useful__info">
-                <h4>Olivia Reynolds</h4>
-                <span>Creative Director</span>
+          <!-- Review 2 (Featured Blueprint Card) -->
+          <div class="zed-card zed-card--featured">
+            <div class="blueprint-header">
+              <span class="blueprint-tag">TURBO STREAM ENGINE</span>
+            </div>
+            <div class="zed-card__body">
+              <p class="zed-quote-text">
+                “Talons is a must-have extension if you use Grabbit. <mark class="quote-hl">Audio extraction at 320kbps is instantaneous</mark>, and the multi-stream format matching <mark class="quote-hl">works flawlessly every single time</mark>.”
+              </p>
+            </div>
+            <div class="zed-author-row">
+              <div class="zed-author-avatar zed-author-avatar--featured">EP</div>
+              <div class="zed-author-meta">
+                <div class="zed-author-name">Ethan Parker</div>
+                <div class="zed-author-role">Sound Designer</div>
               </div>
+              <div class="zed-author-badge zed-author-badge--featured">Logic Pro</div>
             </div>
           </div>
 
-          <div class="useful__item">
-            <p>
-              "Talons is a must-have extension if you use Grabbit. Audio extraction at 320kbps is instantaneous, and the multi-stream format matching works flawlessly every single time."
-            </p>
-            <div class="useful__author">
-              <div class="useful__avatar">EP</div>
-              <div class="useful__info">
-                <h4>Ethan Parker</h4>
-                <span>Sound Designer</span>
+          <!-- Review 3 -->
+          <div class="zed-card">
+            <div class="zed-card__body">
+              <p class="zed-quote-text">
+                “Absolutely love the Talons plugin for Grabbit! It gives you the full power of yt-dlp directly within Grabbit's native interface. Quick, clean, and blazing fast.”
+              </p>
+            </div>
+            <div class="zed-author-row">
+              <div class="zed-author-avatar">OR</div>
+              <div class="zed-author-meta">
+                <div class="zed-author-name">Olivia Reynolds</div>
+                <div class="zed-author-role">Creative Director</div>
               </div>
+              <div class="zed-author-badge">Studio Lead</div>
             </div>
           </div>
         </div>
@@ -302,12 +355,12 @@
         <div class="section_header">
           <h2>About Talons Addon</h2>
         </div>
-        <div class="about__content">
+        <div class="about__content zed-panel">
           <p>
-            <strong>Grabbit</strong> is an ultra-fast, modern download manager designed specifically for macOS. With its high-performance download accelerator, users can maximize bandwidth, schedule downloads, and organize media seamlessly. However, modern dynamic video hosting platforms deliver fragmented streams that require intelligent stream manifest parsing.
+            <strong>Grabbit</strong> is an ultra-fast, modern download manager. With its high-performance download accelerator, users can maximize bandwidth, schedule downloads, and organize media seamlessly. However, modern dynamic video hosting platforms deliver fragmented streams that require intelligent stream manifest parsing.
           </p>
           <p>
-            To capture videos and audio from YouTube and 2,000+ other platforms, we created <strong>Talons</strong>, built on the battle-tested open-source <a href="https://github.com/yt-dlp/yt-dlp" target="_blank" rel="noopener noreferrer">yt-dlp</a> engine. This extension integrates directly with Grabbit to resolve URLs, determine optimal video/audio containers, and dispatch download tasks straight to Grabbit's accelerated multi-part network engine.
+            To capture videos and audio from 2,000+ online media platforms, we created <strong>Talons</strong>, built on the battle-tested open-source <a href="https://github.com/yt-dlp/yt-dlp" target="_blank" rel="noopener noreferrer">yt-dlp</a> engine. This extension integrates directly with Grabbit to resolve URLs, determine optimal video/audio containers, and dispatch download tasks straight to Grabbit's accelerated multi-part network engine.
           </p>
           <p>
             With source code fully audited and available on <a href="https://github.com/grabbit/grabbit-ytdlp-plugin" target="_blank" rel="noopener noreferrer">GitHub</a>, Talons is 100% free, safe, and open source under the MIT License.
@@ -316,54 +369,6 @@
       </div>
     </section>
 
-    <!-- ==================== Share Section ("Tell your friends") ==================== -->
-    <section class="friends" id="share">
-      <div class="container">
-        <div class="section_header">
-          <h2>Tell your friends</h2>
-          <p>Don't forget to share this guide with fellow Mac users and content creators</p>
-        </div>
-
-        <div class="social-wrapper">
-          <!-- Facebook -->
-          <a class="social-card fb" href="https://www.facebook.com/sharer/sharer.php?u=https://grabbit.github.io/grabbit-ytdlp-plugin/" target="_blank" rel="noopener noreferrer" title="Share on Facebook">
-            <div class="social-icon-btn">
-              <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-            </div>
-            <span>Facebook</span>
-          </a>
-
-          <!-- Twitter / X -->
-          <a class="social-card twitter" href="https://twitter.com/intent/tweet?text=Check%20out%20Talons%20for%20Grabbit%20-%20Universal%20media%20extractor%20for%20macOS!&url=https://grabbit.github.io/grabbit-ytdlp-plugin/" target="_blank" rel="noopener noreferrer" title="Share on X (Twitter)">
-            <div class="social-icon-btn">
-              <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-            </div>
-            <span>X / Twitter</span>
-          </a>
-
-          <!-- WhatsApp -->
-          <a class="social-card whatsapp" href="https://api.whatsapp.com/send?text=Download%20videos%20smoothly%20on%20Mac%20with%20Talons%20for%20Grabbit:%20https://grabbit.github.io/grabbit-ytdlp-plugin/" target="_blank" rel="noopener noreferrer" title="Share on WhatsApp">
-            <div class="social-icon-btn">
-              <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.301-.15-1.782-.88-2.058-.98-.276-.1-.477-.15-.677.15-.201.3-.778.98-.954 1.18-.176.2-.351.226-.652.075-.301-.15-1.272-.469-2.423-1.496-.897-.8-1.503-1.789-1.679-2.09-.176-.301-.019-.464.132-.614.136-.135.301-.351.452-.527.15-.176.201-.301.301-.502.101-.2.05-.376-.025-.527-.075-.15-.677-1.633-.928-2.238-.244-.59-.492-.51-.677-.52-.176-.008-.376-.01-.577-.01s-.527.075-.803.376c-.276.301-1.054 1.03-1.054 2.51 0 1.48 1.08 2.91 1.23 3.11.15.2 2.124 3.243 5.145 4.548.719.31 1.28.496 1.718.636.722.23 1.378.197 1.898.12.579-.086 1.782-.728 2.033-1.431.251-.703.251-1.305.176-1.431-.075-.126-.276-.201-.577-.351zM12 21.8c-1.8 0-3.51-.48-5.01-1.38l-.36-.21-3.72.98.99-3.62-.23-.37C2.7 15.69 2.2 13.91 2.2 12c0-5.4 4.4-9.8 9.8-9.8s9.8 4.4 9.8 9.8c0 5.4-4.4 9.8-9.8 9.8zM12 0C5.373 0 0 5.373 0 12c0 2.115.55 4.103 1.517 5.834L0 24l6.335-1.483C8.006 23.368 9.947 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
-            </div>
-            <span>WhatsApp</span>
-          </a>
-
-          <!-- Email -->
-          <a class="social-card email" href="mailto:?subject=Talons%20Addon%20for%20Grabbit&body=Check%20out%20Talons,%20the%20universal%20media%20stream%20extractor%20for%20Grabbit:%20https://grabbit.github.io/grabbit-ytdlp-plugin/" target="_blank" rel="noopener noreferrer" title="Share via Email">
-            <div class="social-icon-btn">
-              <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-            </div>
-            <span>E-mail</span>
-          </a>
-        </div>
-
-        <div class="copy-form">
-          <input class="copy-form__field" id="copyInput" type="text" readonly="readonly" value="https://grabbit.github.io/grabbit-ytdlp-plugin/">
-          <button type="button" class="copy-form__button" id="copyBtn">Copy Link</button>
-        </div>
-      </div>
-    </section>
 
     <!-- ==================== User Reviews Section ==================== -->
     <section class="reviews" id="comments">
@@ -398,14 +403,14 @@
           </form>
 
           <div class="reviews_list" id="reviewsContainer">
-            <!-- Dynamically populated or rendered -->
+            <!-- Dynamically populated or rendered reviews -->
             <div class="review_entry">
               <div class="review_entry_top">
                 <span class="review_entry_name">Marcus Vance</span>
                 <span class="review_entry_stars">★★★★★</span>
               </div>
               <p class="review_entry_comment">
-                Cleanest setup experience ever on macOS. Just dropped `talons.gda` into Grabbit and 4K YouTube downloads started rolling immediately at 80 MB/s.
+                Cleanest setup experience ever. Just dropped `talons.gda` into Grabbit and 4K stream downloads started rolling immediately at 80 MB/s.
               </p>
             </div>
 
@@ -429,7 +434,7 @@
     <div class="container footer__inner">
       <div class="footer__brand">
         <p>&copy; 2026 Talons for Grabbit. Distributed under the MIT License.</p>
-        <p>Powered by open-source <a href="https://github.com/yt-dlp/yt-dlp" target="_blank" rel="noopener noreferrer" style="color: #38bdf8;">yt-dlp</a>.</p>
+        <p>Powered by open-source <a href="https://github.com/yt-dlp/yt-dlp" target="_blank" rel="noopener noreferrer">yt-dlp</a>.</p>
       </div>
 
       <ul class="footer__links">
