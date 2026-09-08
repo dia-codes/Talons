@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 340" width="600" height="340" fill="none">
+  <defs>
+    <filter id="winShadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.45" />
+    </filter>
+  </defs>
+
+  <!-- Window Frame -->
+  <rect x="20" y="20" width="560" height="300" rx="12" fill="#0f172a" stroke="#334155" stroke-width="1.5" filter="url(#winShadow)" />
+  
+  <!-- Window Titlebar -->
+  <path d="M20 32 Q20 20 32 20 L568 20 Q580 20 580 32 L580 60 L20 60 Z" fill="#1e293b" />
+  <circle cx="44" cy="40" r="6" fill="#ef4444" />
+  <circle cx="64" cy="40" r="6" fill="#f59e0b" />
+  <circle cx="84" cy="40" r="6" fill="#10b981" />
+  <text x="300" y="44" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="600" fill="#94a3b8">Grabbit — Settings</text>
+
+  <!-- Sidebar -->
+  <rect x="20" y="60" width="160" height="260" fill="#111827" />
+  <!-- Sidebar items -->
+  <text x="40" y="95" font-family="-apple-system, sans-serif" font-size="12" fill="#64748b">General</text>
+  <text x="40" y="125" font-family="-apple-system, sans-serif" font-size="12" fill="#64748b">Downloads</text>
+  <text x="40" y="155" font-family="-apple-system, sans-serif" font-size="12" fill="#64748b">Network &amp; Speed</text>
+  <!-- Selected sidebar item -->
+  <rect x="28" y="170" width="144" height="32" rx="6" fill="#0284c7" fill-opacity="0.2" stroke="#0284c7" stroke-width="1" />
+  <circle cx="42" cy="186" r="4" fill="#38bdf8" />
+  <text x="56" y="190" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#38bdf8">Extensions</text>
+  <text x="40" y="235" font-family="-apple-system, sans-serif" font-size="12" fill="#64748b">Advanced</text>
+
+  <!-- Main Content Area -->
+  <rect x="180" y="60" width="400" height="260" fill="#0b1329" />
+  
+  <text x="210" y="98" font-family="-apple-system, sans-serif" font-size="16" font-weight="700" fill="#f8fafc">Installed Extensions &amp; Addons</text>
+  <text x="210" y="118" font-family="-apple-system, sans-serif" font-size="12" fill="#94a3b8">Manage custom stream extractors and media sniffers.</text>
+
+  <!-- Plugins List Card -->
+  <rect x="210" y="135" width="340" height="70" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1" />
+  <rect x="222" y="147" width="46" height="46" rx="8" fill="#334155" />
+  <path d="M245 160 L245 178 M238 171 L245 178 L252 171" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+  <text x="280" y="164" font-family="-apple-system, sans-serif" font-size="13" font-weight="600" fill="#cbd5e1">Default HTTP/FTP Sniffer</text>
+  <text x="280" y="180" font-family="-apple-system, sans-serif" font-size="11" fill="#64748b">Core system extension v1.4.0 (Active)</text>
+
+  <!-- Call to action button highlighted -->
+  <g transform="translate(210, 225)">
+    <!-- Glow halo -->
+    <rect x="-3" y="-3" width="226" height="42" rx="10" fill="#0284c7" opacity="0.4" />
+    <rect x="0" y="0" width="220" height="36" rx="8" fill="#0284c7" />
+    <text x="26" y="23" font-family="-apple-system, sans-serif" font-size="12.5" font-weight="700" fill="#ffffff">Install Plugin from File...</text>
+    <!-- Cursor pointer arrow -->
+    <path d="M190 28 L200 45 L193 47 L190 53 L185 51 L188 45 L183 43 Z" fill="#ffffff" stroke="#000000" stroke-width="1.5" />
+  </g>
+</svg>

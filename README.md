@@ -6,6 +6,7 @@
 *Engineered specifically for macOS Apple Silicon (ARM64)*
 
 [![CI](https://img.shields.io/badge/CI-passing-brightgreen.svg?style=flat-square)](https://github.com/grabbit/grabbit-ytdlp-plugin/actions)
+[![Website](https://img.shields.io/badge/website-live-blue.svg?style=flat-square&logo=safari)](https://grabbit.github.io/grabbit-ytdlp-plugin/)
 [![Platform](https://img.shields.io/badge/platform-macOS%20Apple%20Silicon-black.svg?style=flat-square&logo=apple)](https://apple.com)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg?style=flat-square&logo=python)](https://python.org)
 [![Powered By](https://img.shields.io/badge/powered%20by-yt--dlp-red.svg?style=flat-square&logo=youtube)](https://github.com/yt-dlp/yt-dlp)

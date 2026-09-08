@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 340" width="600" height="340" fill="none">
+  <defs>
+    <filter id="dlgShadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.5" />
+    </filter>
+  </defs>
+
+  <!-- Dialog Window Frame -->
+  <rect x="30" y="20" width="540" height="300" rx="12" fill="#1e293b" stroke="#475569" stroke-width="1.5" filter="url(#dlgShadow)" />
+  
+  <!-- Dialog Header -->
+  <path d="M30 32 Q30 20 42 20 L558 20 Q570 20 570 32 L570 56 L30 56 Z" fill="#0f172a" />
+  <circle cx="50" cy="38" r="5" fill="#ef4444" />
+  <circle cx="68" cy="38" r="5" fill="#f59e0b" />
+  <circle cx="86" cy="38" r="5" fill="#10b981" />
+  <text x="300" y="42" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="600" fill="#cbd5e1">Choose Grabbit Extension Bundle</text>
+
+  <!-- Sidebar Finder -->
+  <rect x="30" y="56" width="130" height="214" fill="#0b1120" />
+  <text x="45" y="85" font-family="-apple-system, sans-serif" font-size="10" font-weight="700" fill="#64748b">FAVORITES</text>
+  <text x="45" y="110" font-family="-apple-system, sans-serif" font-size="12" fill="#94a3b8">Desktop</text>
+  <!-- Selected Downloads -->
+  <rect x="38" y="122" width="114" height="26" rx="5" fill="#334155" />
+  <text x="45" y="139" font-family="-apple-system, sans-serif" font-size="12" font-weight="600" fill="#38bdf8">Downloads</text>
+  <text x="45" y="170" font-family="-apple-system, sans-serif" font-size="12" fill="#94a3b8">Applications</text>
+
+  <!-- File Table -->
+  <rect x="160" y="56" width="410" height="214" fill="#1e293b" />
+  
+  <!-- Table Header -->
+  <rect x="160" y="56" width="410" height="24" fill="#0f172a" />
+  <text x="175" y="72" font-family="-apple-system, sans-serif" font-size="11" font-weight="600" fill="#64748b">Name</text>
+  <text x="430" y="72" font-family="-apple-system, sans-serif" font-size="11" font-weight="600" fill="#64748b">Kind</text>
+
+  <!-- Item 1: Some other file -->
+  <text x="195" y="105" font-family="-apple-system, sans-serif" font-size="12" fill="#94a3b8">archive-2026.zip</text>
+  <text x="430" y="105" font-family="-apple-system, sans-serif" font-size="11" fill="#64748b">ZIP Archive</text>
+
+  <!-- Item 2: Selected talons.gda -->
+  <rect x="166" y="120" width="398" height="42" rx="6" fill="#0284c7" fill-opacity="0.3" stroke="#0284c7" stroke-width="1.5" />
+  <!-- Small Talons icon -->
+  <rect x="175" y="128" width="26" height="26" rx="6" fill="#0f172a" />
+  <path d="M188 133 L188 147 M184 142 L188 147 L192 142" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" />
+  <text x="210" y="142" font-family="-apple-system, sans-serif" font-size="13" font-weight="700" fill="#ffffff">talons.gda</text>
+  <text x="210" y="154" font-family="-apple-system, sans-serif" font-size="10" fill="#7dd3fc">Grabbit Download Addon • 2.4 MB</text>
+  <text x="430" y="145" font-family="-apple-system, sans-serif" font-size="11" font-weight="600" fill="#38bdf8">Grabbit Plugin</text>
+
+  <!-- Item 3 -->
+  <text x="195" y="186" font-family="-apple-system, sans-serif" font-size="12" fill="#94a3b8">setup_notes.txt</text>
+  <text x="430" y="186" font-family="-apple-system, sans-serif" font-size="11" fill="#64748b">Plain Text</text>
+
+  <!-- Bottom Action Bar -->
+  <rect x="30" y="270" width="540" height="50" fill="#0f172a" />
+  <text x="50" y="300" font-family="-apple-system, sans-serif" font-size="11" fill="#10b981">● Verified package checksum SHA-256</text>
+  
+  <rect x="400" y="280" width="70" height="30" rx="6" fill="#334155" />
+  <text x="418" y="300" font-family="-apple-system, sans-serif" font-size="12" fill="#cbd5e1">Cancel</text>
+
+  <rect x="480" y="280" width="75" height="30" rx="6" fill="#0284c7" />
+  <text x="504" y="300" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#ffffff">Open</text>
+</svg>
